@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "v+yvthNIoZQ=",
+  "success": true,
+  "projectFilePath": "/Users/sonalimehta/Documents/GitHub/payment-reconciliation-tool/backend/PaymentsMatching.Api/PaymentsMatching.Api.csproj",
+  "expectedPackageFiles": [
+    "/Users/sonalimehta/.nuget/packages/microsoft.aspnetcore.openapi/10.0.4/microsoft.aspnetcore.openapi.10.0.4.nupkg.sha512",
+    "/Users/sonalimehta/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
