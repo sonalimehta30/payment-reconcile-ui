@@ -1,4 +1,4 @@
-# Frontend - Payment Reconcile UI
+# Frontend - Payment Reconciliation
 
 Angular 21 standalone component application for the Payment Reconciliation Tool UI.
 
@@ -7,8 +7,7 @@ Angular 21 standalone component application for the Payment Reconciliation Tool 
 - **Framework**: Angular 21 with Vite build
 - **Styling**: SCSS with Bootstrap classes
 - **Forms**: Reactive forms with FormControl and FormGroup
-- **HTTP**: RxJS observables (no Promises)
-- **Server-Side Rendering (SSR)**: Disabled for simplicity
+- **HTTP**: RxJS observables
 
 ## Prerequisites
 
@@ -43,11 +42,11 @@ src/
 │   │   │   ├── payment-matching.ts
 │   │   │   ├── payment-matching.html
 │   │   │   └── payment-matching.scss
-│   │   └── reusable-table/           # Generic table display
+│   │   └── reusable-table/           # Shared component for table display 
 │   │       ├── reusable-table.ts
 │   │       └── reusable-table.scss
 │   ├── services/
-│   │   └── payment-matching.service.ts  # HTTP & business logic
+│   │   └── payment-matching.service.ts  # HTTP calls
 │   ├── models/
 │   │   └── payment-matching.models.ts   # TypeScript interfaces
 │   ├── app.routes.ts                    # Route definitions
@@ -55,7 +54,6 @@ src/
 │   ├── app.ts                           # Root component
 │   └── app.scss                         # Global styles
 ├── main.ts                              # Bootstrap
-├── main.server.ts                       # SSR entry (unused)
 └── index.html
 ```
 
