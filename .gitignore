@@ -65,6 +65,8 @@ Thumbs.db
 /backend/**/*.db
 /backend/**/*.sqlite
 /backend/**/*.db-journal
+/backend/**/*.db-wal
+/backend/**/*.db-shm
 
 # NuGet cache files
 /backend/project.nuget.cache
