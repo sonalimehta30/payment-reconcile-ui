@@ -15,10 +15,10 @@ public sealed class MatchResult
 
 public enum MatchStatus
 {
-    MATCHED,
-    ONLYSYSTEM,
-    ONLYPROVIDER,
-    AMOUNTMISMATCH,
+    Matched,
+    OnlySystem,
+    OnlyProvider,
+    AmountMismatch,
 }
 
 public enum ResolutionSide
