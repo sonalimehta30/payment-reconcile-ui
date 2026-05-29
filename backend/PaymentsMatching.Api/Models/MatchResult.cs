@@ -3,6 +3,8 @@ namespace PaymentsMatching.Api.Models;
 public sealed class MatchResult
 {
     public Guid Id { get; set; }
+    public Guid SessionId { get; set; }
+    public ReconciliationSession Session { get; set; } = null!;
     public string OrderId { get; set; } = null!;
     public string Currency { get; set; } = null!;
     public decimal? SystemAmount { get; set; }

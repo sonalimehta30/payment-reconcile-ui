@@ -85,7 +85,7 @@ export class PaymentMatchingComponent {
     {
       key: 'resolved',
       label: 'Resolved',
-      value: (row) => (row.resolved ? 'Yes' : 'No'),
+      value: (row) => this.formatResolved(row),
     },
     {
       key: 'resolutionSide',
@@ -252,6 +252,10 @@ export class PaymentMatchingComponent {
 
   private formatAmount(amount: number | null): string {
     return amount === null ? '—' : amount.toFixed(2);
+  }
+  
+  private formatResolved(rowData: PaymentMatchRecord): string {
+    return rowData.status !== 'Matched' ? (rowData.resolved ? 'Yes' : 'No') : 'N/A';
   }
 
   private resetMessages(): void {
