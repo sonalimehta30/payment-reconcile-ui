@@ -1,6 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ValidatorFn,
+  ValidationErrors,
+} from '@angular/forms';
 
 import {
   ReusableTableComponent,
@@ -17,7 +25,7 @@ import { PaymentMatchingService } from '../../services/payment-matching.service'
 @Component({
   selector: 'app-payment-matching',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReusableTableComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ReusableTableComponent],
   templateUrl: './payment-matching.html',
   styleUrls: ['./payment-matching.scss'],
 })
@@ -25,18 +33,26 @@ export class PaymentMatchingComponent {
   private readonly paymentMatchingService = inject(PaymentMatchingService);
 
   readonly title = signal('Payments Matching');
-  readonly systemFile = signal<File | null>(null);
-  readonly providerFile = signal<File | null>(null);
   readonly records = signal<PaymentMatchRecord[]>([]);
   readonly summary = signal<MatchSummary | null>(null);
   readonly selectedFilter = signal<MatchFilter>('all');
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
+  
+  form:FormGroup = new FormGroup({
+    systemFile: new FormControl<File | null>(null, [this.csvFileValidator()]),
+    providerFile: new FormControl<File | null>(null, [this.csvFileValidator()]),
+  });
+  systemFileControl!: FormControl<File | null>;
+  providerFileControl!: FormControl<File | null>;
+    
+  ngOnInit(): void {
+    this.systemFileControl = this.form.get('systemFile') as FormControl<File | null>;
+    this.providerFileControl = this.form.get('providerFile') as FormControl<File | null>;
+  }
 
-  readonly systemFileName = computed(() => this.systemFile()?.name ?? 'Upload a CSV file');
-  readonly providerFileName = computed(() => this.providerFile()?.name ?? 'Upload a CSV file');
-
+  
   readonly filteredRecords = computed(() => {
     const filter = this.selectedFilter();
     const records = this.records();
@@ -112,22 +128,49 @@ export class PaymentMatchingComponent {
 
   onSystemFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.systemFile.set(input.files?.[0] ?? null);
+    const file = input.files?.[0] ?? null;
+    this.systemFileControl.markAsTouched();
+    this.systemFileControl.setErrors(null);
+
+    if (file && !this.isCsvFile(file)) {
+      this.systemFileControl.setValue(null);
+      this.systemFileControl.setErrors({ unsupportedFileType: true });
+      this.errorMessage.set('Unsupported file type. Please upload a .csv file.');
+      return;
+    }
+
+    this.systemFileControl.setValue(file);
     this.resetMessages();
   }
 
   onProviderFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.providerFile.set(input.files?.[0] ?? null);
+    const file = input.files?.[0] ?? null;
+    this.providerFileControl.markAsTouched();
+    this.providerFileControl.setErrors(null);
+
+    if (file && !this.isCsvFile(file)) {
+      this.providerFileControl.setValue(null);
+      this.providerFileControl.setErrors({ unsupportedFileType: true });
+      this.errorMessage.set('Unsupported file type. Please upload a .csv file.');
+      return;
+    }
+
+    this.providerFileControl.setValue(file);
     this.resetMessages();
   }
 
   async onRunMatch(): Promise<void> {
-    const systemFile = this.systemFile();
-    const providerFile = this.providerFile();
+    const systemFile = this.systemFileControl.value;
+    const providerFile = this.providerFileControl.value;
 
     if (!systemFile || !providerFile) {
       this.errorMessage.set('Please upload both the System CSV and Provider CSV files.');
+      return;
+    }
+
+    if (this.form.invalid) {
+      this.errorMessage.set('Unsupported file type. Please upload valid .csv files.');
       return;
     }
 
@@ -148,6 +191,21 @@ export class PaymentMatchingComponent {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  private isCsvFile(file: File): boolean {
+    return /\.csv$/i.test(file.name);
+  }
+
+  private csvFileValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const file = control.value as File | null;
+      if (!file) {
+        return null;
+      }
+
+      return this.isCsvFile(file) ? null : { unsupportedFileType: true };
+    };
   }
 
   onFilterChange(value: MatchFilter): void {

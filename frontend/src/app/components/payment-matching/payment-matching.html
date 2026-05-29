@@ -1,17 +1,19 @@
 <section class="">
-    <div class="section section-heading mb-4">
-        <h1 class="h3 container">Payments Matching</h1>
-        <h4 class="h4 mb-3 container text-muted small"> Upload the System CSV and Provider CSV files to reconcile payments.</h4>
-        <div class="text-muted mb-0 bg-primary-subtle p-3">
-            <div class="container font-weight-bold">
-                @if(!summary()){
-                    <h6 class="h6">Step 1: Choose CSV files to process</h6>
-                }@else if(summary()){
-                    <h4 class="h6">Step 2: Review the uploaded files Match Summary</h4>
-                }
-            </div>
-        </div>
+  <div class="section section-heading mb-4">
+    <h1 class="h3 container">Payments Matching</h1>
+    <h4 class="h4 mb-3 container text-muted small">
+      Upload the System CSV and Provider CSV files to reconcile payments.
+    </h4>
+    <div class="text-muted mb-0 bg-primary-subtle p-3">
+      <div class="container font-weight-bold">
+        @if (!summary()) {
+          <h6 class="h6">Step 1: Choose CSV files to process</h6>
+        } @else if (summary()) {
+          <h4 class="h6">Step 2: Review the uploaded files Match Summary</h4>
+        }
+      </div>
     </div>
+  </div>
 </section>
 
 <div class="container">
@@ -25,7 +27,7 @@
                 <i class="fa-solid fa-upload"></i>
               </div>
               <span class="upload-label">System CSV</span>
-              <span class="upload-note">{{ systemFileName() }}</span>
+              <span class="upload-note">{{systemFileControl.value?.name || 'Upload a CSV file' }}</span>
             </label>
             <input
               id="systemFile"
@@ -34,6 +36,12 @@
               hidden
               (change)="onSystemFileChange($event)"
             />
+            <div
+              *ngIf="systemFileControl.errors?.['unsupportedFileType'] && systemFileControl.touched"
+              class="text-danger small mt-1"
+            >
+            Only .csv files are accepted.
+            </div>
           </div>
 
           <div class="col-12 col-md-6">
@@ -42,7 +50,7 @@
                 <i class="fa-solid fa-upload"></i>
               </div>
               <span class="upload-label">Provider CSV</span>
-              <span class="upload-note">{{ providerFileName() }}</span>
+              <span class="upload-note">{{ providerFileControl.value?.name || 'Upload a CSV file' }}</span>
             </label>
             <input
               id="providerFile"
@@ -51,6 +59,14 @@
               hidden
               (change)="onProviderFileChange($event)"
             />
+            <div
+              *ngIf="
+                providerFileControl.errors?.['unsupportedFileType'] && providerFileControl.touched
+              "
+              class="text-danger small mt-1"
+            >
+            Only .csv files are accepted.
+            </div>
           </div>
         </div>
 
@@ -58,7 +74,12 @@
         <div *ngIf="successMessage()" class="text-success mb-3">{{ successMessage() }}</div>
 
         <div class="d-flex justify-content-start mt-5">
-          <button class="btn btn-warning btn-run" type="button" [disabled]="isLoading()" (click)="onRunMatch()">
+          <button
+            class="btn btn-warning btn-run"
+            type="button"
+            [disabled]="isLoading()"
+            (click)="onRunMatch()"
+          >
             <span *ngIf="!isLoading()">Run Match</span>
             <span *ngIf="isLoading()">Processing...</span>
           </button>
@@ -71,36 +92,36 @@
     <h2 class="h5 mb-2">Match Summary</h2>
     <p class="text-muted mb-3">Details from the latest run.</p>
     <div class="row g-3">
-        <div class="col-sm-4 col-lg-2">
-            <div class="bg-info-subtle p-1">
-                <div class="text-muted small">Total:</div>
-                <div class="h4 mb-0">{{ summary.total }}</div>
-            </div>
+      <div class="col-sm-4 col-lg-2">
+        <div class="bg-info-subtle p-1">
+          <div class="text-muted small">Total:</div>
+          <div class="h4 mb-0">{{ summary.total }}</div>
         </div>
-        <div class="col-sm-4 col-lg-2">
-            <div class="bg-success-subtle p-1">
-            <div class="text-muted small">Matched</div>
-            <div class="h4 mb-0">{{ summary.matched }}</div>
-            </div>
+      </div>
+      <div class="col-sm-4 col-lg-2">
+        <div class="bg-success-subtle p-1">
+          <div class="text-muted small">Matched</div>
+          <div class="h4 mb-0">{{ summary.matched }}</div>
         </div>
-        <div class="col-sm-4 col-lg-2">
-            <div class="bg-info-subtle p-1">
-            <div class="text-muted small">Only System</div>
-            <div class="h4 mb-0">{{ summary.onlySystem }}</div>
-            </div>
+      </div>
+      <div class="col-sm-4 col-lg-2">
+        <div class="bg-info-subtle p-1">
+          <div class="text-muted small">Only System</div>
+          <div class="h4 mb-0">{{ summary.onlySystem }}</div>
         </div>
-        <div class="col-sm-4 col-lg-2">
-            <div class="bg-info-subtle p-1">
-            <div class="text-muted small">Only Provider</div>
-            <div class="h4 mb-0">{{ summary.onlyProvider }}</div>
-            </div>
+      </div>
+      <div class="col-sm-4 col-lg-2">
+        <div class="bg-info-subtle p-1">
+          <div class="text-muted small">Only Provider</div>
+          <div class="h4 mb-0">{{ summary.onlyProvider }}</div>
         </div>
-        <div class="col-sm-4 col-lg-2">
-            <div class="bg-danger-subtle p-1">
-            <div class="text-muted small">Amount Mismatch</div>
-            <div class="h4 mb-0">{{ summary.amountMismatch }}</div>
-            </div>
+      </div>
+      <div class="col-sm-4 col-lg-2">
+        <div class="bg-danger-subtle p-1">
+          <div class="text-muted small">Amount Mismatch</div>
+          <div class="h4 mb-0">{{ summary.amountMismatch }}</div>
         </div>
+      </div>
     </div>
   </div>
 
@@ -114,7 +135,7 @@
         <select
           id="filterSelect"
           class="form-select"
-          style="width: 200px;"
+          style="width: 200px"
           [ngModel]="selectedFilter()"
           (ngModelChange)="onFilterChange($event)"
         >
