@@ -27,6 +27,7 @@ export interface MatchSummary {
 }
 
 export interface MatchRunResponse {
+  sessionId: string;
   summary: MatchSummary;
   records: PaymentMatchRecord[];
 }

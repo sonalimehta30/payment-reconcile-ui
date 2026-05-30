@@ -88,6 +88,9 @@
             <span *ngIf="isLoading()">Processing...</span>
           </button>
         </div>
+        <div class="small text-muted mt-2" title="A reconciliation session id is created and stored locally after a successful run. Subsequent filtering requests are scoped to this session.">
+          Session saved locally for filtering and retrieval.
+        </div>
       </div>
     </div>
   </div>
@@ -98,7 +101,11 @@
     <div class="row g-3">
       <div class="col-sm-4 col-lg-2">
         <div class="bg-info-subtle p-1">
-          <div class="text-muted small">Total:</div>
+          <div class="text-muted small"> Total: 
+            <span class="text-primary" title="Total number of unique records processed">
+              <i class="fa-solid fa-info-circle text-info"></i> 
+            </span>
+          </div>
           <div class="h4 mb-0">{{ summary.total }}</div>
         </div>
       </div>
@@ -146,6 +153,9 @@
           <option value="resolved">Resolved</option>
           <option value="unresolved">Unresolved</option>
         </select>
+        <span class="ms-2" title="Filtering is applied to the current reconciliation session stored in your browser. Re-run files to create a new session.">
+          <i class="fa-solid fa-info-circle text-secondary"></i>
+        </span>
       </div>
     </div>
 

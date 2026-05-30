@@ -102,7 +102,8 @@ onRunMatch(): void {
 }
 
 onFilterChange(value: MatchFilter): void {
-  this.paymentMatchingService.getMatches(value === 'all' ? undefined : value).subscribe({
+  const sessionId = localStorage.getItem('reconSessionId') ?? undefined;
+  this.paymentMatchingService.getMatches(sessionId, value === 'all' ? undefined : value).subscribe({
     next: (records) => { this.records.set(records); }
   });
 }
@@ -113,7 +114,7 @@ onFilterChange(value: MatchFilter): void {
 Filtering is delegated to the backend:
 
 - Filter control: `all`, `resolved`, `unresolved`
-- Calls `GET /api/match/getMatches?filter=...`
+- Calls `GET /api/match/getMatches?sessionId=...&filter=...` (the `sessionId` returned by `runMatch` scopes results to a reconciliation session)
 - Backend returns only matching records (no UI-side filtering)
 
 ### Match Status Display
@@ -187,6 +188,7 @@ interface PaymentMatchRecord {
 }
 
 interface MatchRunResponse {
+  sessionId: string;
   summary: MatchSummary;
   records: PaymentMatchRecord[];
 }

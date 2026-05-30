@@ -38,6 +38,7 @@ Upload two CSV files and run the matching algorithm.
 **Response** (MatchResponseDto):
 ```json
 {
+  "sessionId": "c3f8c7d1-...",
   "summary": {
     "total": 100,
     "matched": 85,
@@ -69,13 +70,14 @@ Upload two CSV files and run the matching algorithm.
 
 ### GET /getMatches
 
-Retrieve persisted match records with optional filtering.
+Retrieve persisted match records for a specific reconciliation session with optional filtering.
 
 **Query Parameters**:
+- `sessionId` (required): the reconciliation session Guid returned by `POST /process`
 - `filter` (optional): `all`, `resolved`, `unresolved`
   - `resolved`: status == `Matched`
   - `unresolved`: status != `Matched` (catches AmountMismatch, OnlySystem, OnlyProvider)
-  - `all` or missing: all records
+  - `all` or missing: all records for the supplied `sessionId`
 
 **Response**: Array of PaymentMatchRecordDto
 

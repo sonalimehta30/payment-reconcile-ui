@@ -4,6 +4,8 @@ import { Component, Input } from '@angular/core';
 export interface TableColumn<T> {
   key: string;
   label: string;
+  hasTooltip?: boolean;
+  tooltip?: string;
   value: (row: T) => string;
   className?: string;
 }

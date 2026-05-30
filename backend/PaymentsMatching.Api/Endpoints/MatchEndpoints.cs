@@ -39,9 +39,9 @@ public static class MatchEndpoints
 
         // Retrieve processed match records from the database with optional filtering by resolution state.
         // This endpoint returns only the list of records (no summary).
-        group.MapGet("getMatches", async (string? filter, MatchService matchService) =>
+        group.MapGet("getMatches", async (Guid sessionId, string? filter, MatchService matchService) =>
         {
-            var records = await matchService.GetMatchesAsync(filter);
+            var records = await matchService.GetMatchesAsync(sessionId, filter);
             return Results.Ok(records);
         })
         .WithName("GetMatches")

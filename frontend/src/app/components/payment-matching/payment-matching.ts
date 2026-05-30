@@ -31,6 +31,7 @@ export class PaymentMatchingComponent {
   readonly title = signal('Payments Matching');
   readonly records = signal<PaymentMatchRecord[]>([]);
   readonly summary = signal<MatchSummary | null>(null);
+  readonly currentSessionId = signal<string | null>(null);
   readonly selectedFilter = signal<MatchFilter>('all');
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -50,6 +51,14 @@ export class PaymentMatchingComponent {
     this.filterControl.valueChanges.subscribe((value) => {
       if (value) this.onFilterChange(value as MatchFilter);
     });
+
+    // Restore session id if previously stored
+    try {
+      const stored = localStorage.getItem('reconSessionId');
+      if (stored) this.currentSessionId.set(stored);
+    } catch {
+      // ignore storage errors
+    }
   }
 
   // Backend returns pre-filtered records; do not apply client-side filtering.
@@ -85,6 +94,8 @@ export class PaymentMatchingComponent {
     {
       key: 'resolved',
       label: 'Resolved',
+      hasTooltip: true,
+      tooltip: 'Only applicable for unmatched records. Displays `NA` when there is no mismatch in the record details.',
       value: (row) => this.formatResolved(row),
     },
     {
@@ -169,6 +180,9 @@ export class PaymentMatchingComponent {
       next: (response) => {
         this.summary.set(response.summary);
         this.records.set(response.records);
+        // persist session id so subsequent filter calls are scoped
+        this.currentSessionId.set(response.sessionId);
+        try { localStorage.setItem('reconSessionId', response.sessionId); } catch { }
         this.successMessage.set('Match completed. Review the results and resolve any open items.');
         this.isLoading.set(false);
       },
@@ -203,7 +217,8 @@ export class PaymentMatchingComponent {
     this.errorMessage.set(null);
 
     const filterParam = value === 'all' ? undefined : value;
-    this.paymentMatchingService.getMatches(filterParam).subscribe({
+    const sessionId = this.currentSessionId();
+    this.paymentMatchingService.getMatches(sessionId ?? undefined, filterParam).subscribe({
       next: (records) => {
         // getMatches returns only records; summary is managed from the process API
         this.records.set(records);

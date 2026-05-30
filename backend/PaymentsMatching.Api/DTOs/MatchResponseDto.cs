@@ -4,6 +4,7 @@ namespace PaymentsMatching.Api.DTOs;
 
 public sealed class MatchResponseDto
 {
+    public Guid SessionId { get; set; }
     public MatchSummaryDto Summary { get; set; } = null!;
     public IReadOnlyList<PaymentMatchRecordDto> Records { get; set; } = Array.Empty<PaymentMatchRecordDto>();
 }

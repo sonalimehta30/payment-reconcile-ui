@@ -35,8 +35,11 @@ export class PaymentMatchingService {
     return this.http.post<MatchRunResponse>(`${this.apiUrl}/process`, formData);
   }
 
-  getMatches(filter?: string): Observable<PaymentMatchRecord[]> {
-    const options = filter ? { params: { filter } } : {};
+  getMatches(sessionId?: string, filter?: string): Observable<PaymentMatchRecord[]> {
+    const params: { [key: string]: string } = {};
+    if (sessionId) params['sessionId'] = sessionId;
+    if (filter) params['filter'] = filter;
+    const options = Object.keys(params).length > 0 ? { params } : {};
     return this.http.get<PaymentMatchRecord[]>(`${this.apiUrl}/getMatches`, options);
   }
 

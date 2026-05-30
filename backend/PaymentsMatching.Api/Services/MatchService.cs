@@ -89,16 +89,15 @@ public sealed class MatchService
             .Where(record => record.Status != MatchStatus.Matched)
             .ToList();
 
-        return BuildResponse(unresolvedRecords, records);
+        return BuildResponse(session.Id, unresolvedRecords, records);
     }
 
     /// <summary>
     /// Retrieve persisted match records.
     /// </summary>
-    public async Task<IEnumerable<PaymentMatchRecordDto>> GetMatchesAsync(
-        string? filter)
+    public async Task<IEnumerable<PaymentMatchRecordDto>> GetMatchesAsync(Guid sessionId, string? filter)
     {
-        var query = _dbContext.MatchResults.AsNoTracking();
+        var query = _dbContext.MatchResults.AsNoTracking().Where(r => r.SessionId == sessionId);;
 
         if (!string.IsNullOrWhiteSpace(filter))
         {
@@ -127,9 +126,7 @@ public sealed class MatchService
     /// <summary>
     /// Mark a persisted match result as resolved.
     /// </summary>
-    public async Task<PaymentMatchRecordDto> ResolveAsync(
-        ResolveRequestDto request)
-    {
+    public async Task<PaymentMatchRecordDto> ResolveAsync(ResolveRequestDto request){
         if (!Guid.TryParse(request.RecordId, out var recordId))
         {
             throw new KeyNotFoundException(
@@ -256,6 +253,7 @@ public sealed class MatchService
     // ============================================
 
     private static MatchResponseDto BuildResponse(
+        Guid sessionId,
         IEnumerable<MatchResult> records,
         IEnumerable<MatchResult> allRecords)
     {
@@ -273,6 +271,7 @@ public sealed class MatchService
 
         return new MatchResponseDto
         {
+            SessionId = sessionId,
             Summary = new MatchSummaryDto
             {
                 Total = uniqueOrderIds.Count,
